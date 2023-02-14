@@ -4,7 +4,7 @@ import * as RecordController from '../controllers/record.controller';
 const router: Router = Router();
 
 router
-  .route('./')
+  .route('/')
   /* List */
   .get(RecordController.get)
   /* Create */

@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": false,
+        "amount": 30
+    },
+    "auditLog": "/Users/kyungho/Projects/solution-challenge/backend/logs/error/.1d775806316e015b581639b785f416eff0d956a3-audit.json",
+    "files": [
+        {
+            "date": 1676378607861,
+            "name": "/Users/kyungho/Projects/solution-challenge/backend/logs/error/2023-02-14.error.log",
+            "hash": "48d6b8646242bb7ed6a9a4471b5a06a2c1b11c2806ad9db09982ba7e4effa502"
+        }
+    ],
+    "hashType": "sha256"
+}

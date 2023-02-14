@@ -15,7 +15,7 @@ export class Record {
   @Column({ type: 'enum', enum: Feedback, default: Feedback.UNKNOWN })
   feedback: Feedback;
 
-  @Column()
+  @Column({ default: '' })
   url: string;
 
   @Column({ type: 'boolean', default: false })

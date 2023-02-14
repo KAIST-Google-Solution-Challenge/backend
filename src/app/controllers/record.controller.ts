@@ -13,7 +13,11 @@ export async function get(req: Request, res: Response, next: NextFunction) {
 
 export async function create(req: Request, res: Response, next: NextFunction) {
   try {
-    const savedRecord = await AppDataSource.manager.save(req.body);
+    const record = new Record();
+    record.deviceId = req.body.deviceId;
+    record.isHandled = req.body.isHandled;
+
+    const savedRecord = await AppDataSource.manager.save(record);
     res.json(savedRecord);
   } catch (error) {
     next(error);

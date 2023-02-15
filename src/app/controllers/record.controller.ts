@@ -32,24 +32,26 @@ export async function uploadAudio(req: Request, res: Response, next: NextFunctio
     if (!req.file) {
       throw new Error('No file uploaded');
     }
-
+    const recordId = req.params.id;
     const blob = bucket.file(req.file.originalname);
     const blobStream = blob.createWriteStream({
       resumable: false,
     });
 
     blobStream.on('error', (err) => {
-      next(err);
+      throw err;
     });
 
     blobStream.on('finish', async () => {
       const publicUrl = format(`https://storage.googleapis.com/${bucket.name}/${blob.name}`);
-      const updatedRecord = await recordRepository.update(req.params.id, {
+      await recordRepository.update(recordId, {
         url: publicUrl,
       });
+      next();
     });
 
     blobStream.end(req.file.buffer);
+    res.sendStatus(200);
     next();
   } catch (error) {
     next(error);

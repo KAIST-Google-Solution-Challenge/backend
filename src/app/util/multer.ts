@@ -5,7 +5,6 @@ const projectId = process.env.GCLOUD_API_KEY;
 const storage = new Storage({ projectId });
 
 const fileFilter = function (req, file, cb) {
-  console.log(file.mimetype);
   if (file.mimetype !== 'audio/wave' && file.mimetype !== 'audio/mpeg') {
     return cb(new Error('Only WAV and MP3 audios are allowed'));
   }

@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Record } from '../entity';
 import { bucket } from '../util/multer';
 import { format } from 'util';
+import { transcribeAudio } from '../util/stt';
 
 const recordRepository = AppDataSource.getRepository(Record);
 
@@ -42,17 +43,24 @@ export async function uploadAudio(req: Request, res: Response, next: NextFunctio
       throw err;
     });
 
+    let publicUrl: string;
     blobStream.on('finish', async () => {
-      const publicUrl = format(`https://storage.googleapis.com/${bucket.name}/${blob.name}`);
+      publicUrl = format(`https://storage.googleapis.com/${bucket.name}/${blob.name}`);
       await recordRepository.update(recordId, {
         url: publicUrl,
       });
-      next();
+      res.json(publicUrl);
     });
-
     blobStream.end(req.file.buffer);
-    res.sendStatus(200);
-    next();
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function speechToText(req: Request, res: Response, next: NextFunction) {
+  try {
+    const transcription = await transcribeAudio(req.body.url);
+    res.json(transcription);
   } catch (error) {
     next(error);
   }

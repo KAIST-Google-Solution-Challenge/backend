@@ -13,4 +13,6 @@ router
 
 router.route('/upload/:id').post(imageUploader.single('file'), RecordController.uploadAudio);
 
+router.route('/transcript').post(RecordController.speechToText);
+
 export const recordsRouter: Router = router;

@@ -11,6 +11,8 @@ router
   /* Create */
   .post(RecordController.create);
 
-router.route('/upload/:id').post(audioUploader.single('file'), RecordController.uploadAudio);
+router.route('/:id').patch(RecordController.updateFeedback);
+
+router.post('/upload', audioUploader.single('file'), RecordController.uploadAudio);
 
 export const recordsRouter: Router = router;

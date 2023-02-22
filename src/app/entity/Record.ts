@@ -12,7 +12,7 @@ export class Record {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP()' })
   createdAt: Date;
 
-  @Column({ length: 10 })
+  @Column({ length: 11 })
   phoneNumber: string;
 
   @Column({ type: 'enum', enum: Feedback, default: Feedback.UNKNOWN })

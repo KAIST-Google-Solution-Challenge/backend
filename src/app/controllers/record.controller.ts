@@ -16,6 +16,24 @@ export async function get(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+export async function getByPhoneNumber(req: Request, res: Response, next: NextFunction) {
+  try {
+    const records = await recordRepository.find({
+      where: {
+        phoneNumber: req.params.phoneNumber,
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        probability: true,
+      },
+    });
+    res.json(records);
+  } catch (error) {
+    next(error);
+  }
+}
+
 export async function create(req: Request, res: Response, next: NextFunction) {
   try {
     const record = new Record();

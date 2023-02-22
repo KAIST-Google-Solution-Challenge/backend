@@ -13,6 +13,8 @@ router
 
 router.route('/:id').patch(RecordController.updateFeedback);
 
+router.get('/:phoneNumber', RecordController.getByPhoneNumber);
+
 router.post('/upload', audioUploader.single('file'), RecordController.uploadAudio);
 
 export const recordsRouter: Router = router;

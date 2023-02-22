@@ -3,7 +3,6 @@ import { Request, Response, NextFunction } from 'express';
 import { Record } from '../entity';
 import { bucket } from '../util/multer';
 import { format } from 'util';
-import { transcribeAudio } from '../util/stt';
 
 const recordRepository = AppDataSource.getRepository(Record);
 
@@ -20,7 +19,24 @@ export async function create(req: Request, res: Response, next: NextFunction) {
   try {
     const record = new Record();
     record.deviceId = req.body.deviceId;
-    record.isHandled = req.body.isHandled;
+    record.phoneNumber = req.body.phoneNumber;
+    record.probability = req.body.probability;
+    record.url = req.body.url;
+    const savedRecord = await recordRepository.save(record);
+    res.json(savedRecord);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function updateFeedback(req: Request, res: Response, next: NextFunction) {
+  try {
+    const record = await recordRepository.findOne({
+      where: {
+        id: parseInt(req.params.id),
+      },
+    });
+    record.feedback = req.body.feedback;
     const savedRecord = await recordRepository.save(record);
     res.json(savedRecord);
   } catch (error) {
@@ -33,7 +49,6 @@ export async function uploadAudio(req: Request, res: Response, next: NextFunctio
     if (!req.file) {
       throw new Error('No file uploaded');
     }
-    const recordId = req.params.id;
     const blob = bucket.file(req.file.originalname);
     const blobStream = blob.createWriteStream({
       resumable: false,
@@ -45,22 +60,10 @@ export async function uploadAudio(req: Request, res: Response, next: NextFunctio
 
     let publicUrl: string;
     blobStream.on('finish', async () => {
-      publicUrl = format(`https://storage.googleapis.com/${bucket.name}/${blob.name}`);
-      await recordRepository.update(recordId, {
-        url: publicUrl,
-      });
+      publicUrl = format(`gs://${bucket.name}/${blob.name}`);
       res.json(publicUrl);
     });
     blobStream.end(req.file.buffer);
-  } catch (error) {
-    next(error);
-  }
-}
-
-export async function speechToText(req: Request, res: Response, next: NextFunction) {
-  try {
-    const transcription = await transcribeAudio(req.body.url);
-    res.json(transcription);
   } catch (error) {
     next(error);
   }

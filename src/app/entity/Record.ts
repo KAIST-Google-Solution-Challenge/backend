@@ -12,12 +12,15 @@ export class Record {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP()' })
   createdAt: Date;
 
+  @Column({ length: 10 })
+  phoneNumber: string;
+
   @Column({ type: 'enum', enum: Feedback, default: Feedback.UNKNOWN })
   feedback: Feedback;
 
-  @Column({ default: '' })
-  url: string;
+  @Column({ type: 'decimal', scale: 2 })
+  probability: number;
 
-  @Column({ type: 'boolean', default: false })
-  isHandled: boolean;
+  @Column()
+  url: string;
 }

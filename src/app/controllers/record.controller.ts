@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Record } from '../entity';
 import { bucket } from '../util/multer';
 import { format } from 'util';
+import { v4 as uuidv4 } from 'uuid';
 
 const recordRepository = AppDataSource.getRepository(Record);
 
@@ -49,7 +50,7 @@ export async function uploadAudio(req: Request, res: Response, next: NextFunctio
     if (!req.file) {
       throw new Error('No file uploaded');
     }
-    const blob = bucket.file(req.file.originalname);
+    const blob = bucket.file(uuidv4());
     const blobStream = blob.createWriteStream({
       resumable: false,
     });

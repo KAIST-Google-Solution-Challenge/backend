@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import * as RecordController from '../controllers/record.controller';
-import { imageUploader } from '../util/multer';
+import { audioUploader } from '../util/multer';
 
 const router: Router = Router();
 
@@ -11,8 +11,10 @@ router
   /* Create */
   .post(RecordController.create);
 
-router.route('/upload/:id').post(imageUploader.single('file'), RecordController.uploadAudio);
+router.route('/:id').patch(RecordController.updateFeedback);
 
-router.route('/transcript').post(RecordController.speechToText);
+router.get('/:phoneNumber', RecordController.getByPhoneNumber);
+
+router.post('/upload', audioUploader.single('file'), RecordController.uploadAudio);
 
 export const recordsRouter: Router = router;

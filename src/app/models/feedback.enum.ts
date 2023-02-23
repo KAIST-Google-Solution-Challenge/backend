@@ -1,5 +1,5 @@
 export enum Feedback {
-  YES,
-  NO,
-  UNKNOWN,
+  YES = 'YES',
+  NO = 'NO',
+  UNKNOWN = 'UNKNOWN',
 }

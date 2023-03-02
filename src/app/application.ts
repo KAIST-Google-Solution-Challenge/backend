@@ -18,10 +18,12 @@ export class Application {
     this._server.use(cors());
     this._server.use(this.logRequest);
     AppDataSource.initialize()
-      .then(async () => {
+      .then(() => {
         logger.info('Database connected');
       })
-      .catch((error) => logger.error(error));
+      .catch((error) => {
+        logger.error('Database connection error');
+      });
     this._server.use(applicationRouter);
   }
 

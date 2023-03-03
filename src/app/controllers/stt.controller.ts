@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { bucket, deleteFile } from '../util/multer';
 import { format } from 'util';
-import { transcribeAudio } from '../util/stt';
+import { transcribeMp3, transcribeWav } from '../util/stt';
 
 export async function uploadAudio(req: Request, res: Response, next: NextFunction) {
   try {
@@ -29,7 +29,12 @@ export async function uploadAudio(req: Request, res: Response, next: NextFunctio
 
 export async function speechToText(req: Request, res: Response, next: NextFunction) {
   try {
-    const transcription = await transcribeAudio(res.locals.publicUrl);
+    let transcription;
+    if (req.file.mimetype === 'audio/mpeg') {
+      transcription = await transcribeMp3(res.locals.publicUrl);
+    } else if (req.file.mimetype === 'audio/wave') {
+      transcription = await transcribeWav(res.locals.publicUrl);
+    }
     res.json(transcription);
     next();
   } catch (error) {

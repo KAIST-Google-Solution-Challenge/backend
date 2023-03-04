@@ -4,6 +4,6 @@ import { audioUploader } from '../util/multer';
 
 const router: Router = Router();
 
-router.post('/', audioUploader.single('file'), SttController.uploadAudio, SttController.speechToText, SttController.deleteAudio);
+router.post('/', audioUploader.single('file'), SttController.convertAudio, SttController.uploadAudio, SttController.speechToText, SttController.deleteAudio);
 
 export const sttRouter: Router = router;

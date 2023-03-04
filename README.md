@@ -1,5 +1,9 @@
 ## Google-Solution-Challenge Backend
 
+## Prerequisite
+
+`ffmpeg` should be installed in the server environment
+
 ## Run
 
 ```sh

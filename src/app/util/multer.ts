@@ -1,12 +1,14 @@
 import * as Multer from 'multer';
 import { Storage } from '@google-cloud/storage';
 import multer = require('multer');
+import logger from './logger';
 
 const projectId = process.env.GCLOUD_API_KEY;
 const storage = new Storage({ projectId });
 
 const fileFilter = function (req, file, cb) {
-  if (file.mimetype !== 'audio/mpeg' && file.mimetype !== 'audio/wave' && file.mimetype !== 'audio/mp4') {
+  if (file.mimetype !== 'audio/mpeg' && file.mimetype !== 'audio/wave' && file.mimetype !== 'audio/mp4' && file.mimetype !== 'application/octet-stream') {
+    logger.warn(file.mimetype);
     return cb(new Error('Only MP3, WAV and M4A audios are allowed'));
   }
   cb(null, true);

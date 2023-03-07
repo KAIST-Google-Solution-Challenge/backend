@@ -8,3 +8,4 @@ logs/
 uploads/
 
 .env
+.DS_Store

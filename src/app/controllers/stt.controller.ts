@@ -10,7 +10,7 @@ export async function convertAudio(req: Request, res: Response, next: NextFuncti
     if (!req.file) {
       return res.status(400).json({ message: 'No file attached.' });
     }
-    if (req.file.mimetype === 'audio/mp4') {
+    if (req.file.mimetype === 'audio/mp4' || req.file.mimetype === 'application/octet-stream') {
       res.locals.filepath = './uploads/results/' + req.file.filename + '.wav';
       res.locals.filename = req.file.filename + '.wav';
       ffmpeg(req.file.path)

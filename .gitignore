@@ -1,11 +1,15 @@
 .idea/
 .vscode/
+.cache/
+.venv/
 node_modules/
 build/
 tmp/
 temp/
 logs/
 uploads/
+src/app/util/classifier/__pycache__/
 
 .env
 .DS_Store
+src/app/util/classifier/conversation_model.pt

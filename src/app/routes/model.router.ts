@@ -10,6 +10,7 @@ router.post(
   ModelController.convertAudio,
   ModelController.uploadAudio,
   ModelController.speechToText,
+  ModelController.classify,
   ModelController.deleteAudio
 );
 

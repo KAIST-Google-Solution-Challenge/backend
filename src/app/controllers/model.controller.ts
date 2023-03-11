@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { bucket, deleteFile, uploadFileToBucket } from '../util/multer';
 import { format } from 'util';
 import { transcribeMp3, transcribeWav } from '../util/stt';
+import { spawn } from 'child_process';
 import * as fs from 'fs';
 import * as ffmpeg from 'fluent-ffmpeg';
 
@@ -58,10 +59,41 @@ export async function speechToText(req: Request, res: Response, next: NextFuncti
     } else {
       transcription = await transcribeWav(res.locals.publicUrl);
     }
-    res.json(transcription);
+    res.locals.transcription = transcription;
+    // res.json(transcription);
     next();
   } catch (error) {
     res.status(500).json({ message: 'Error transcribing audio file', error: error });
+    next();
+  }
+}
+
+export async function classify(req: Request, res: Response, next: NextFunction) {
+  try {
+    if (res.locals.transcription === undefined) {
+      next();
+    }
+
+    const inference = spawn('python', [__dirname + '/../util/classifier/main.py', res.locals.transcription]);
+
+    let inferenceResult: string;
+    inference.stdout.on('data', (data) => {
+      const results = data.toString().split('\n');
+      inferenceResult = results[results.length - 2];
+      console.log(inferenceResult);
+    });
+
+    inference.stderr.on('data', (data) => {
+      res.status(500).json({ message: 'Error classifying script', error: data.toString() });
+      next();
+    });
+
+    inference.on('close', (code) => {
+      res.json(inferenceResult);
+      next();
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error classifying script', error: error });
     next();
   }
 }
@@ -70,7 +102,6 @@ export async function deleteAudio(req: Request, res: Response, next: NextFunctio
   try {
     fs.unlinkSync(res.locals.filepath);
     await deleteFile(res.locals.filename);
-    next();
   } catch (error) {
     res.status(500).json({ message: 'Error deleting audio file' });
   }

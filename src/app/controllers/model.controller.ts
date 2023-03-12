@@ -5,6 +5,7 @@ import { transcribeMp3, transcribeWav } from '../util/stt';
 import { spawn } from 'child_process';
 import * as fs from 'fs';
 import * as ffmpeg from 'fluent-ffmpeg';
+import { Message, MessageResponse } from '../models/message';
 
 export async function convertAudio(req: Request, res: Response, next: NextFunction) {
   try {
@@ -104,5 +105,41 @@ export async function deleteAudio(req: Request, res: Response, next: NextFunctio
     await deleteFile(res.locals.filename);
   } catch (error) {
     res.status(500).json({ message: 'Error deleting audio file' });
+  }
+}
+
+export async function analyzeMessages(req: Request, res: Response, next: NextFunction) {
+  try {
+    const messages: Message[] = req.body;
+    const results: MessageResponse[] = [];
+    let cnt = 0;
+
+    messages.forEach((message) => {
+      const inference = spawn('python', [__dirname + '/../util/classifier/main.py', message.content]);
+
+      let inferenceResult: string;
+      inference.stdout.on('data', (data) => {
+        const results = data.toString().split('\n');
+        inferenceResult = results[results.length - 2];
+      });
+
+      inference.stderr.on('data', (data) => {
+        res.status(500).json({ message: 'Error classifying script', error: data.toString() });
+        return next();
+      });
+
+      inference.on('close', (code) => {
+        results.push({
+          id: message.id,
+          probability: Number(inferenceResult),
+        });
+        cnt++;
+        if (cnt == messages.length) {
+          return res.json(results);
+        }
+      });
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 }

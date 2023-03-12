@@ -110,7 +110,7 @@ export async function deleteAudio(req: Request, res: Response, next: NextFunctio
 
 export async function analyzeMessages(req: Request, res: Response, next: NextFunction) {
   try {
-    const messages: Message[] = req.body;
+    const messages: Message[] = req.body.messages;
     const results: MessageResponse[] = [];
     let cnt = 0;
 
@@ -129,10 +129,12 @@ export async function analyzeMessages(req: Request, res: Response, next: NextFun
       });
 
       inference.on('close', (code) => {
-        results.push({
+        const result = {
           id: message.id,
           probability: Number(inferenceResult),
-        });
+        };
+        results.push(result);
+        console.log(result);
         cnt++;
         if (cnt == messages.length) {
           return res.json(results);

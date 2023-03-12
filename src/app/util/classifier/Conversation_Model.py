@@ -75,4 +75,8 @@ class ConversationModel:
       result_list.sort()
       # print(result_list)
       # print(f">> {result_list[-1]*100}% 확률로 " + test_eval[0] + "입니다.")
-      print(result_list[-1]*100)
+      if (test_eval[0] == "일반 대화"):
+        print(1 - result_list[-1]*100)
+      else:
+        print(result_list[-1]*100)
+        

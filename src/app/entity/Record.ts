@@ -18,7 +18,7 @@ export class Record {
   @Column({ type: 'enum', enum: Feedback, default: Feedback.UNKNOWN })
   feedback: Feedback;
 
-  @Column({ type: 'decimal', scale: 2 })
+  @Column({ type: 'decimal', precision: 3, scale: 3 })
   probability: number;
 
   @Column()

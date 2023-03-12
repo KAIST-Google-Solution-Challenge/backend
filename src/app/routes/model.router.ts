@@ -14,6 +14,6 @@ router.post(
   ModelController.deleteAudio
 );
 
-router.post('/messages');
+router.post('/messages', ModelController.analyzeMessages);
 
 export const modelRouter: Router = router;

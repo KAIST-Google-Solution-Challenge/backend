@@ -110,9 +110,14 @@ export async function deleteAudio(req: Request, res: Response, next: NextFunctio
 
 export async function analyzeMessages(req: Request, res: Response, next: NextFunction) {
   try {
+    console.log(req.body);
     const messages: Message[] = req.body.messages;
     const results: MessageResponse[] = [];
     let cnt = 0;
+
+    if (messages.length == 0) {
+      return res.sendStatus(200);
+    }
 
     messages.forEach((message) => {
       const inference = spawn('python', [__dirname + '/../util/classifier/main.py', message.content]);
@@ -124,8 +129,7 @@ export async function analyzeMessages(req: Request, res: Response, next: NextFun
       });
 
       inference.stderr.on('data', (data) => {
-        res.status(500).json({ message: 'Error classifying script', error: data.toString() });
-        return next();
+        return res.status(500).json({ message: 'Error classifying script', error: data.toString() });
       });
 
       inference.on('close', (code) => {
@@ -142,6 +146,6 @@ export async function analyzeMessages(req: Request, res: Response, next: NextFun
       });
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 }

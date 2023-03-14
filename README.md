@@ -28,7 +28,8 @@ GLOUD_API_KEY = {your-GCLOUD-API-KEY}
 ## Run
 
 ```sh
-export GOOGLE_APPLICATION_CREDENTIALS="$(pwd)/solution-challenge-kaist-947caf3ed982.json"
+chmod +x ./setup.sh
+./setup.sh
 
 # With GCLOUD MySQL
 npm start

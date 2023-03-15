@@ -2,6 +2,10 @@
 
 ## Prerequisite
 
+### Development Environment
+
+`Node.js` version `16.19`
+
 ### Dependencies
 
 You need to download following manually or use `docker`.

@@ -1,0 +1,13 @@
+.cache/
+.venv/
+logs/
+node_modules/
+uploads/
+.gitignore
+.git
+.dockerignore
+Dockerfile
+*.md
+*.sh
+
+*.ts

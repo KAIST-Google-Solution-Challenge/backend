@@ -34,9 +34,9 @@
     "winston-daily-rotate-file": "^4.7.1"
   },
   "scripts": {
-    "setup": "export GOOGLE_APPLICATION_CREDENTIALS=\"$(pwd)/solution-challenge-kaist-947caf3ed982.json\"",
+    "setup": "export GOOGLE_APPLICATION_CREDENTIALS=\"$(pwd)/service-account-key.json\"",
     "start": "ts-node-dev --respawn src/index.ts",
-    "dev:local": "cross-env NODE_ENV=local ts-node-dev --respawn src/index.ts",
+    "dev:local": "npm run setup && cross-env NODE_ENV=local ts-node-dev --respawn src/index.ts",
     "typeorm": "typeorm-ts-node-commonjs"
   }
 }

@@ -6,6 +6,7 @@ import { spawn } from 'child_process';
 import * as fs from 'fs';
 import * as ffmpeg from 'fluent-ffmpeg';
 import { Message, MessageResponse } from '../models/message';
+import logger from '../util/logger';
 
 export async function convertAudio(req: Request, res: Response, next: NextFunction) {
   try {
@@ -38,6 +39,7 @@ export async function convertAudio(req: Request, res: Response, next: NextFuncti
       next();
     }
   } catch (error) {
+    logger.error('Error converting audio file');
     res.status(500).json({ message: 'Error converting audio file' });
   }
 }
@@ -48,6 +50,7 @@ export async function uploadAudio(req: Request, res: Response, next: NextFunctio
     await uploadFileToBucket(res.locals.filepath);
     next();
   } catch (error) {
+    logger.error('Error uploading audio file');
     res.status(500).json({ message: 'Error uploading audio file' });
   }
 }
@@ -64,8 +67,10 @@ export async function speechToText(req: Request, res: Response, next: NextFuncti
     // res.json(transcription);
     next();
   } catch (error) {
+    console.log(error);
+    logger.error('Error transcribing audio file');
+    deleteAudio(req, res, next);
     res.status(500).json({ message: 'Error transcribing audio file', error: error });
-    next();
   }
 }
 
@@ -94,8 +99,9 @@ export async function classify(req: Request, res: Response, next: NextFunction) 
       next();
     });
   } catch (error) {
+    logger.error('Error classifying script');
+    deleteAudio(req, res, next);
     res.status(500).json({ message: 'Error classifying script', error: error });
-    next();
   }
 }
 
@@ -104,13 +110,13 @@ export async function deleteAudio(req: Request, res: Response, next: NextFunctio
     fs.unlinkSync(res.locals.filepath);
     await deleteFile(res.locals.filename);
   } catch (error) {
+    logger.error('Error deleting audio file');
     res.status(500).json({ message: 'Error deleting audio file' });
   }
 }
 
 export async function analyzeMessages(req: Request, res: Response, next: NextFunction) {
   try {
-    console.log(req.body);
     const messages: Message[] = req.body.messages;
     const results: MessageResponse[] = [];
     let cnt = 0;
@@ -146,6 +152,7 @@ export async function analyzeMessages(req: Request, res: Response, next: NextFun
       });
     });
   } catch (error) {
+    logger.error(error);
     return res.status(500).json({ message: error.message });
   }
 }

@@ -22,7 +22,10 @@ class ConversationModel:
     learning_rate =  5e-5
     
     def __init__(self):
-        self.device = torch.device("cpu")
+        if (torch.cuda.is_available()):
+           self.device = torch.device("cuda:0");
+        else:
+          self.device = torch.device("cpu")
         bertmodel, vocab = get_pytorch_kobert_model()
         self.model = BERTClassifier(bertmodel,  dr_rate=0.5).to(self.device)
         self.model_conv = torch.load(filename, map_location=self.device)

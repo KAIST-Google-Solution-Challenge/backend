@@ -1,5 +1,7 @@
 ## Google-Solution-Challenge Backend
 
+Server is also available at `http://35.216.49.87:3000/` hosting with [`GCE`](https://cloud.google.com/compute?hl=en)
+
 ## Prerequisite
 
 ### Development Environment

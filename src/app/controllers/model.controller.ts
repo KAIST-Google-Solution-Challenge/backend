@@ -81,7 +81,7 @@ export async function classify(req: Request, res: Response, next: NextFunction) 
       next();
     }
 
-    const inference = spawn('python', [__dirname + '/../util/classifier/main.py', res.locals.transcription]);
+    const inference = spawn('python3.9', [__dirname + '/../util/classifier/main.py', res.locals.transcription]);
 
     let inferenceResult: string;
     inference.stdout.on('data', (data) => {
@@ -127,7 +127,7 @@ export async function analyzeMessages(req: Request, res: Response, next: NextFun
     }
 
     messages.forEach((message) => {
-      const inference = spawn('python', [__dirname + '/../util/classifier/main.py', message.content]);
+      const inference = spawn('python3.9', [__dirname + '/../util/classifier/main.py', message.content]);
 
       let inferenceResult: string;
       inference.stdout.on('data', (data) => {

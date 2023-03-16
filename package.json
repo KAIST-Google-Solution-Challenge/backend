@@ -36,6 +36,7 @@
   "scripts": {
     "start": "ts-node-dev src/index.ts",
     "dev:cloud": "cross-env NODE_ENV=cloud ts-node-dev --respawn src/index.ts",
-    "dev:local": "cross-env NODE_ENV=local ts-node-dev --respawn src/index.ts"
+    "dev:local": "cross-env NODE_ENV=local ts-node-dev --respawn src/index.ts",
+    "publish": "pm2 start npm --name 'the-voice' -- run start"
   }
 }

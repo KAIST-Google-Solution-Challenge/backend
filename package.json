@@ -34,9 +34,8 @@
     "winston-daily-rotate-file": "^4.7.1"
   },
   "scripts": {
-    "setup": "export GOOGLE_APPLICATION_CREDENTIALS=\"$(pwd)/service-account-key.json\"",
-    "start": "ts-node-dev --respawn src/index.ts",
-    "dev:local": "npm run setup && cross-env NODE_ENV=local ts-node-dev --respawn src/index.ts",
-    "typeorm": "typeorm-ts-node-commonjs"
+    "start": "ts-node-dev src/index.ts",
+    "dev:cloud": "cross-env NODE_ENV=cloud ts-node-dev --respawn src/index.ts",
+    "dev:local": "cross-env NODE_ENV=local ts-node-dev --respawn src/index.ts"
   }
 }

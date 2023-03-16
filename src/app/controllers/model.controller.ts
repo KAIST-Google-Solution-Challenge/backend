@@ -50,6 +50,7 @@ export async function uploadAudio(req: Request, res: Response, next: NextFunctio
     await uploadFileToBucket(res.locals.filepath);
     next();
   } catch (error) {
+    console.error(error);
     logger.error('Error uploading audio file');
     res.status(500).json({ message: 'Error uploading audio file' });
   }

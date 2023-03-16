@@ -4,6 +4,8 @@ import { audioUploader } from '../util/multer';
 
 const router: Router = Router();
 
+router.use(RecordController.checkDevEnv);
+
 router
   .route('/')
   /* List */

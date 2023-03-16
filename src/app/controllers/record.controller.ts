@@ -7,6 +7,17 @@ import { v4 as uuidv4 } from 'uuid';
 
 const recordRepository = AppDataSource.getRepository(Record);
 
+export async function checkDevEnv(req: Request, res: Response, next: NextFunction) {
+  try {
+    if (process.env.NODE_ENV !== 'cloud' && process.env.NODE_ENV !== 'local') {
+      return res.status(400).send('Invalid environment');
+    }
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
+
 export async function get(req: Request, res: Response, next: NextFunction) {
   try {
     const savedRecords = await recordRepository.find();

@@ -27,15 +27,6 @@ To access `Google Cloud Storage Bucket`, 1. Bucket should be created in advance,
 Please refer this [document](https://cloud.google.com/storage/docs/creating-buckets?hl=en).
 
 ```sh
-# GCLOUD MySQL
-DB_HOST = 
-DB_USER = 
-DB_PASS = 
-
-# Local MySQL
-LOCAL_DB_USER = 
-LOCAL_DB_PASS = 
-
 # GCLOUD Config
 GCLOUD_STORAGE_BUCKET = {your-bucket-name}
 GCLOUD_PROJECT_ID = {your-project-id}
@@ -44,7 +35,9 @@ GLOUD_API_KEY = {your-GCLOUD-API-KEY}
 
 ### service-account-key.json
 
-To access [`Google Speech To Text Api`](https://cloud.google.com/speech-to-text?hl=en), `service-account-key.json` should be created and stored in the root directory of this project.
+To access [`Google Speech To Text Api`](https://cloud.google.com/speech-to-text?hl=en), `service-account-key.json` should be created and stored in the root directory of this project. Additionally, it should be save as an environmental variable.
+
+`export GOOGLE_APPLICATION_CREDENTIALS=service-account-key.json`
 
 **note: service account key's filename should be exactly same as `service-account-key.json`**
 
@@ -57,7 +50,33 @@ npm start
 ```
 
 ### Using Local MySQL Server
+
+Firstly, local mysql info should be saved in .env
+
+```sh
+LOCAL_DB_USER = 
+LOCAL_DB_PASS = 
+```
+
+Run
+
 ```sh
 mysql.server start
 npm run dev:local
+```
+
+### Using Google MySQL Server
+
+Firstly, MySQL server info should be saved in .env
+
+```sh
+DB_HOST = 
+DB_USER = 
+DB_PASS = 
+```
+
+Run
+
+```sh
+npm run dev:cloud
 ```

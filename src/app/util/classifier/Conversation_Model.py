@@ -37,7 +37,16 @@ class ConversationModel:
       train_acc = (max_indices == Y).sum().data.cpu().numpy()/max_indices.size()[0]
       return train_acc
     
-    def softmax(self, a):
+    def softmax(a):
+      a = a.tolist()
+      a.sort()
+      a0 = a[0]
+      a1 = a[1]
+      if a0 < -3 and a1 > 3:
+        a0 += 3
+        a1 -= 3
+      a = [a0, a1]
+      print(a)
       exp_a = np.exp(a)
       sum_exp_a = np.sum(exp_a)
       y = exp_a / sum_exp_a

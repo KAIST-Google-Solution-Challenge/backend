@@ -90,9 +90,10 @@ export async function classify(req: Request, res: Response, next: NextFunction) 
       console.log(inferenceResult);
     });
 
-    inference.stderr.on('data', (data) => {
-      res.status(500).json({ message: 'Error classifying script', error: data.toString() });
-      next();
+    inference.stderr.on('data', async (data) => {
+      fs.unlinkSync(res.locals.filepath);
+      await deleteFile(res.locals.filename);
+      return res.status(500).json({ message: 'Error classifying script', error: data.toString() });
     });
 
     inference.on('close', (code) => {
@@ -101,8 +102,9 @@ export async function classify(req: Request, res: Response, next: NextFunction) 
     });
   } catch (error) {
     logger.error('Error classifying script');
-    deleteAudio(req, res, next);
-    res.status(500).json({ message: 'Error classifying script', error: error });
+    fs.unlinkSync(res.locals.filepath);
+    await deleteFile(res.locals.filename);
+    return res.status(500).json({ message: 'Error classifying script', error: error });
   }
 }
 
@@ -112,7 +114,7 @@ export async function deleteAudio(req: Request, res: Response, next: NextFunctio
     await deleteFile(res.locals.filename);
   } catch (error) {
     logger.error('Error deleting audio file');
-    res.status(500).json({ message: 'Error deleting audio file' });
+    return res.status(500).json({ message: 'Error deleting audio file' });
   }
 }
 

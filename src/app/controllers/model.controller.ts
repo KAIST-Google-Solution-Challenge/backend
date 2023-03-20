@@ -122,38 +122,48 @@ export async function analyzeMessages(req: Request, res: Response, next: NextFun
   try {
     const messages: Message[] = req.body.messages;
     const results: MessageResponse[] = [];
-    let cnt = 0;
 
     if (messages.length == 0) {
       return res.sendStatus(200);
     }
 
-    messages.forEach((message) => {
-      const inference = spawn('python3.9', [__dirname + '/../util/classifier/main.py', message.content]);
+    const analyzeMesage = function (content: string): Promise<string> {
+      const inference = spawn('python3.9', [__dirname + '/../util/classifier/main.py', content]);
+      let prob: string;
 
-      let inferenceResult: string;
-      inference.stdout.on('data', (data) => {
-        const results = data.toString().split('\n');
-        inferenceResult = results[results.length - 2];
+      inference.stdout.on('data', function (data: string) {
+        const stdout = data.toString().split('\n');
+        prob = stdout[stdout.length - 2];
       });
 
-      inference.stderr.on('data', (data) => {
-        return res.status(500).json({ message: 'Error classifying script', error: data.toString() });
-      });
+      return new Promise((resolve, reject) => {
+        inference.stderr.on('data', function (data: string) {
+          reject(new Error('Error classifying data'));
+        });
 
-      inference.on('close', (code) => {
-        const result = {
-          id: message.id,
-          probability: Number(inferenceResult),
-        };
-        results.push(result);
-        console.log(result);
-        cnt++;
-        if (cnt == messages.length) {
-          return res.json(results);
-        }
+        inference.on('close', (code) => {
+          console.log(prob);
+          resolve(prob);
+        });
       });
-    });
+    };
+
+    const analyzeWrapper = function (message: Message): Promise<string> {
+      const content = message.content;
+      return analyzeMesage(content);
+    };
+
+    for (var i = 0; i < messages.length; i++) {
+      const message = messages[i];
+      const result = await analyzeWrapper(message);
+      results.push({
+        id: message.id,
+        probability: Number(result),
+      });
+    }
+
+    await Promise.all(results);
+    res.json(results);
   } catch (error) {
     logger.error(error);
     return res.status(500).json({ message: error.message });

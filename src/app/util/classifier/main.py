@@ -4,7 +4,7 @@ from BERTDataset import BERTDataset
 from BERTClassifier import BERTClassifier
 
 if __name__ == "__main__":
-    sentence = sys.argv[1]
+    sentence = ''.join(sys.argv[1:])
 
     model = ConversationModel()
     model.predict(sentence)

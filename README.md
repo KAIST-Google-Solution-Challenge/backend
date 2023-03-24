@@ -57,6 +57,45 @@ There are several requirements on `backend`.
 
 Optional : [`MySQL: 8.0.32`](https://dev.mysql.com/doc/relnotes/mysql/8.0/en/) (for local DB testing)
 
+## Structure
+
+```sh
+src
+├── app
+│   ├── application.ts
+│   ├── controllers
+│   │   ├── model.controller.ts
+│   │   └── record.controller.ts
+│   ├── data-source.ts
+│   ├── entity
+│   │   ├── Record.ts
+│   │   └── index.ts
+│   ├── index.ts
+│   ├── models
+│   │   ├── feedback.enum.ts
+│   │   └── message.ts
+│   ├── routes
+│   │   ├── application.router.ts
+│   │   ├── index.ts
+│   │   ├── model.router.ts
+│   │   └── records.router.ts
+│   └── util
+│       ├── classifier
+│       │   ├── BERTClassifier.py
+│       │   ├── BERTDataset.py
+│       │   ├── Conversation_Model.py
+│       │   ├── __pycache__
+│       │   │   ├── BERTClassifier.cpython-39.pyc
+│       │   │   ├── BERTDataset.cpython-39.pyc
+│       │   │   └── Conversation_Model.cpython-39.pyc
+│       │   ├── conversation_model.pt
+│       │   └── main.py
+│       ├── logger.ts
+│       ├── multer.ts
+│       └── stt.ts
+└── index.ts
+```
+
 ## APIs
 
 ### `{{path}}/model/`

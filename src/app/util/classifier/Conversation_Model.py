@@ -42,7 +42,6 @@ class ConversationModel:
       exp_a = np.exp(a)
       sum_exp_a = np.sum(exp_a)
       y = exp_a / sum_exp_a
-
       return y
     
     def predict(self, predict_sentence):
@@ -68,7 +67,6 @@ class ConversationModel:
           for i in out:
               logits=i
               logits = logits.detach().cpu().numpy()
-              # print(logits)
               if np.argmax(logits) == 0:
                   test_eval.append("일반 대화")
               elif np.argmax(logits) == 1:
@@ -77,8 +75,6 @@ class ConversationModel:
               
       result_list = result.tolist()
       result_list.sort()
-      # print(result_list)
-      # print(f">> {result_list[-1]*100}% 확률로 " + test_eval[0] + "입니다.")
       if (test_eval[0] == "일반 대화"):
         print(100 - result_list[-1]*100)
       else:

@@ -1,5 +1,4 @@
 import speech from '@google-cloud/speech';
-import logger from './logger';
 
 // Creates a client
 export async function transcribeMp3(url: string) {
@@ -25,7 +24,6 @@ export async function transcribeMp3(url: string) {
   // Get a Promise representation of the final result of the job
   const [response] = await operation.promise();
   const transcription = response.results.map((result) => result.alternatives[0].transcript).join('\n');
-  logger.info(`Transcription: ${transcription}`);
   return transcription;
 }
 
@@ -52,6 +50,5 @@ export async function transcribeWav(url: string) {
   // Get a Promise representation of the final result of the job
   const [response] = await operation.promise();
   const transcription = response.results.map((result) => result.alternatives[0].transcript).join('\n');
-  logger.info(`Transcription: ${transcription}`);
   return transcription;
 }

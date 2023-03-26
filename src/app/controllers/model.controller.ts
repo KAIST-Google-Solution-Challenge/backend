@@ -24,9 +24,10 @@ export async function convertAudio(req: Request, res: Response, next: NextFuncti
           console.log(progress);
         })
         .on('error', (err) => {
-          throw new Error(err);
+          next(err);
         })
         .on('end', () => {
+          // Delete the original audio file
           fs.unlinkSync(req.file.path);
           next();
         })
@@ -39,8 +40,7 @@ export async function convertAudio(req: Request, res: Response, next: NextFuncti
       next();
     }
   } catch (error) {
-    logger.error('Error converting audio file');
-    res.status(500).json({ message: 'Error converting audio file' });
+    next(error);
   }
 }
 
@@ -50,9 +50,7 @@ export async function uploadAudio(req: Request, res: Response, next: NextFunctio
     await uploadFileToBucket(res.locals.filepath);
     next();
   } catch (error) {
-    console.error(error);
-    logger.error('Error uploading audio file');
-    res.status(500).json({ message: 'Error uploading audio file' });
+    next(error);
   }
 }
 
@@ -68,10 +66,7 @@ export async function speechToText(req: Request, res: Response, next: NextFuncti
     // res.json(transcription);
     next();
   } catch (error) {
-    console.log(error);
-    logger.error('Error transcribing audio file');
-    deleteAudio(req, res, next);
-    res.status(500).json({ message: 'Error transcribing audio file', error: error });
+    next(error);
   }
 }
 
@@ -101,21 +96,45 @@ export async function classify(req: Request, res: Response, next: NextFunction) 
       next();
     });
   } catch (error) {
-    logger.error('Error classifying script');
-    fs.unlinkSync(res.locals.filepath);
-    await deleteFile(res.locals.filename);
-    return res.status(500).json({ message: 'Error classifying script', error: error });
+    next(error);
   }
 }
 
 export async function deleteAudio(req: Request, res: Response, next: NextFunction) {
   try {
-    fs.unlinkSync(res.locals.filepath);
+    // Delete original audio file
+    if (fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+
+    // Delete converted audio file
+    if (fs.existsSync(res.locals.filepath)) {
+      fs.unlinkSync(res.locals.filepath);
+    }
+
+    // Delete audio file from bucket
     await deleteFile(res.locals.filename);
   } catch (error) {
-    logger.error('Error deleting audio file');
-    return res.status(500).json({ message: 'Error deleting audio file' });
+    next(error);
   }
+}
+
+export async function errorHandler(error: Error, req: Request, res: Response, next: NextFunction) {
+  // Delete original audio file
+  if (fs.existsSync(req.file.path)) {
+    fs.unlinkSync(req.file.path);
+  }
+
+  // Delete converted audio file
+  if (fs.existsSync(res.locals.filepath)) {
+    fs.unlinkSync(res.locals.filepath);
+  }
+
+  // Delete audio file from bucket
+  await deleteFile(res.locals.filename);
+
+  console.log(error.stack);
+  res.status(500).send(error.message);
 }
 
 export async function analyzeMessages(req: Request, res: Response, next: NextFunction) {

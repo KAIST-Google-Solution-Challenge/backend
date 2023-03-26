@@ -46,5 +46,8 @@ export async function uploadFileToBucket(filepath: string) {
 }
 
 export async function deleteFile(fileName: string) {
-  await storage.bucket(process.env.GCLOUD_STORAGE_BUCKET).file(fileName).delete();
+  const file = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET).file(fileName);
+  try {
+    await file.delete();
+  } catch (error) {}
 }

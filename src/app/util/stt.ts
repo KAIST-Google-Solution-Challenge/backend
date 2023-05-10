@@ -1,4 +1,5 @@
 import speech from '@google-cloud/speech';
+import logger from './logger';
 
 // Creates a client
 export async function transcribeMp3(url: string) {
@@ -46,9 +47,12 @@ export async function transcribeWav(url: string) {
 
   // Detects speech in the audio file. This creates a recognition job that you
   // can wait for now, or get its result later.
-  const [operation] = await client.longRunningRecognize(request);
+  // const [operation] = await client.longRunningRecognize(request);
   // Get a Promise representation of the final result of the job
-  const [response] = await operation.promise();
+  // const [response] = await operation.promise();
+
+  const [response] = await client.recognize(request);
   const transcription = response.results.map((result) => result.alternatives[0].transcript).join('\n');
+  logger.debug(transcription);
   return transcription;
 }

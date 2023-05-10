@@ -13,13 +13,18 @@ export async function convertAudio(req: Request, res: Response, next: NextFuncti
     if (!req.file) {
       return res.status(400).json({ message: 'No file attached.' });
     }
-    if (req.file.mimetype === 'audio/mp4' || req.file.mimetype === 'application/octet-stream') {
-      res.locals.filepath = './uploads/results/' + req.file.filename + '.wav';
-      res.locals.filename = req.file.filename + '.wav';
+
+    res.locals.filename = req.file.filename + '.wav';
+    res.locals.filepath = './uploads/results/' + res.locals.filename;
+
+    logger.debug('Start converting...');
+    if (req.file.mimetype !== 'audio/wave') {
       ffmpeg(req.file.path)
         .inputFormat('m4a')
         .outputFormat('wav')
         .audioBitrate('44.1k')
+        .setStartTime(0)
+        .setDuration(59)
         .on('progress', function (progress) {
           console.log(progress);
         })
@@ -28,13 +33,12 @@ export async function convertAudio(req: Request, res: Response, next: NextFuncti
         })
         .on('end', () => {
           // Delete the original audio file
+          logger.debug('End converting...');
           fs.unlinkSync(req.file.path);
           next();
         })
         .save(res.locals.filepath);
     } else {
-      res.locals.filepath = './uploads/results/' + req.file.filename + '.mp3';
-      res.locals.filename = req.file.filename + '.mp3';
       fs.copyFileSync(req.file.path, './uploads/results/' + req.file.filename);
       fs.unlinkSync(req.file.path);
       next();
@@ -56,14 +60,10 @@ export async function uploadAudio(req: Request, res: Response, next: NextFunctio
 
 export async function speechToText(req: Request, res: Response, next: NextFunction) {
   try {
-    let transcription: string;
-    if (req.file.mimetype === 'audio/mpeg') {
-      transcription = await transcribeMp3(res.locals.publicUrl);
-    } else {
-      transcription = await transcribeWav(res.locals.publicUrl);
-    }
+    logger.debug('Start STT...');
+    const transcription = await transcribeWav(res.locals.publicUrl);
     res.locals.transcription = transcription;
-    // res.json(transcription);
+    logger.debug('End STT...');
     next();
   } catch (error) {
     next(error);
@@ -75,23 +75,25 @@ export async function classify(req: Request, res: Response, next: NextFunction) 
     if (res.locals.transcription === undefined) {
       next();
     }
-
-    const inference = spawn('python3.9', [__dirname + '/../util/classifier/main.py', res.locals.transcription]);
+    logger.debug('Start Classify...');
+    const inference = spawn('python3.9', ['model/main.py', res.locals.transcription]);
 
     let inferenceResult: string;
     inference.stdout.on('data', (data) => {
       const results = data.toString().split('\n');
       inferenceResult = results[results.length - 2];
-      console.log(inferenceResult);
+      logger.debug(`classify results: ${inferenceResult}`);
     });
 
     inference.stderr.on('data', async (data) => {
+      logger.debug(data);
       fs.unlinkSync(res.locals.filepath);
       await deleteFile(res.locals.filename);
-      return res.status(500).json({ message: 'Error classifying script', error: data.toString() });
+      throw new Error('Classifying failed');
     });
 
     inference.on('close', (code) => {
+      logger.debug('End Classify...');
       res.json(inferenceResult);
       next();
     });
@@ -147,7 +149,7 @@ export async function analyzeMessages(req: Request, res: Response, next: NextFun
     }
 
     const analyzeMesage = function (content: string): Promise<string> {
-      const inference = spawn('python3.9', [__dirname + '/../util/classifier/main.py', content]);
+      const inference = spawn('python3.9', ['model/main.py', content]);
       let prob: string;
 
       inference.stdout.on('data', function (data: string) {

@@ -4,7 +4,6 @@ import * as express from 'express';
 import { Express, NextFunction, Request, Response } from 'express';
 import logger from './util/logger';
 import { applicationRouter } from './routes';
-import { AppDataSource } from './data-source';
 
 export class Application {
   private _server: Express;
@@ -17,15 +16,6 @@ export class Application {
     this._server.use(bodyParser.urlencoded({ extended: true }));
     this._server.use(cors());
     this._server.use(this.logRequest);
-    if (process.env.NODE_ENV === 'cloud' || process.env.NODE_ENV === 'local') {
-      AppDataSource.initialize()
-        .then(() => {
-          logger.info('Database connected');
-        })
-        .catch((error) => {
-          logger.error('Database connection error');
-        });
-    }
     this._server.use(applicationRouter);
   }
 

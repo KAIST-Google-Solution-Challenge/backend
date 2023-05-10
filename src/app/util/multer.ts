@@ -1,7 +1,5 @@
-import * as Multer from 'multer';
 import { Storage } from '@google-cloud/storage';
 import multer = require('multer');
-import logger from './logger';
 
 const projectId = process.env.GCLOUD_API_KEY;
 const storage = new Storage({ projectId });

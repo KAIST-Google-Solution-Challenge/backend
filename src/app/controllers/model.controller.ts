@@ -44,7 +44,8 @@ export async function convertAudio(req: Request, res: Response, next: NextFuncti
       next();
     }
   } catch (error) {
-    next(error);
+    logger.error('Error when converting audio');
+    res.sendStatus(500);
   }
 }
 
@@ -54,7 +55,8 @@ export async function uploadAudio(req: Request, res: Response, next: NextFunctio
     await uploadFileToBucket(res.locals.filepath);
     next();
   } catch (error) {
-    next(error);
+    logger.error('Error when uploading audio');
+    res.sendStatus(500);
   }
 }
 
@@ -66,7 +68,8 @@ export async function speechToText(req: Request, res: Response, next: NextFuncti
     logger.debug('End STT...');
     next();
   } catch (error) {
-    next(error);
+    logger.error('Error when STT');
+    res.sendStatus(500);
   }
 }
 
@@ -103,7 +106,8 @@ export async function classify(req: Request, res: Response, next: NextFunction) 
       next();
     });
   } catch (error) {
-    next(error);
+    logger.error('Error when classifying audio');
+    res.sendStatus(500);
   }
 }
 
@@ -122,7 +126,8 @@ export async function deleteAudio(req: Request, res: Response, next: NextFunctio
     // Delete audio file from bucket
     await deleteFile(res.locals.filename);
   } catch (error) {
-    next(error);
+    logger.error('Error when deleting audio');
+    res.sendStatus(500);
   }
 }
 
@@ -192,7 +197,7 @@ export async function analyzeMessages(req: Request, res: Response, next: NextFun
     logger.debug('End Message Classify...');
     res.json(results);
   } catch (error) {
-    logger.error(error);
-    return res.status(500).json({ message: error.message });
+    logger.error('Error when analyzing message');
+    res.sendStatus(500);
   }
 }

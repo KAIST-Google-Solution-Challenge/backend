@@ -83,7 +83,7 @@ export async function classify(req: Request, res: Response, next: NextFunction) 
     inference.stdout.on('data', (data) => {
       const results = data.toString().split('\n');
       probability = results[results.length - 3];
-      tokens = JSON.parse(results[results.length - 2].replace(/'/g, '"'))
+      tokens = JSON.parse(results[results.length - 2].replace(/'/g, '"'));
       logger.debug(`classify results: ${probability}, ${tokens}`);
     });
 
@@ -155,11 +155,12 @@ export async function analyzeMessages(req: Request, res: Response, next: NextFun
 
     const analyzeMesage = function (content: string): Promise<string> {
       const inference = spawn('python3.9', ['model/main.py', content]);
-      let prob: string;
+      let probability: string;
 
       inference.stdout.on('data', function (data: string) {
-        const stdout = data.toString().split('\n');
-        prob = stdout[stdout.length - 2];
+        const results = data.toString().split('\n');
+        probability = results[results.length - 3];
+        logger.debug(`classify results: ${probability}`);
       });
 
       return new Promise((resolve, reject) => {
@@ -168,8 +169,7 @@ export async function analyzeMessages(req: Request, res: Response, next: NextFun
         });
 
         inference.on('close', (code) => {
-          console.log(prob);
-          resolve(prob);
+          resolve(probability);
         });
       });
     };
@@ -189,6 +189,7 @@ export async function analyzeMessages(req: Request, res: Response, next: NextFun
     }
 
     await Promise.all(results);
+    logger.debug('End Message Classify...');
     res.json(results);
   } catch (error) {
     logger.error(error);

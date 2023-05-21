@@ -76,7 +76,9 @@ class ConversationModel:
       result_list = result.tolist()
       result_list.sort()
       if (test_eval[0] == "일반 대화"):
-        print(100 - result_list[-1]*100)
+        # print(100 - result_list[-1]*100)
+        return 100 - result_list[-1]*100
       else:
-        print(result_list[-1]*100)
+        # print(result_list[-1]*100)
+        return result_list[-1]*100
         

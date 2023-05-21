@@ -78,11 +78,13 @@ export async function classify(req: Request, res: Response, next: NextFunction) 
     logger.debug('Start Classify...');
     const inference = spawn('python3.9', ['model/main.py', res.locals.transcription]);
 
-    let inferenceResult: string;
+    let probability: string;
+    let tokens: string;
     inference.stdout.on('data', (data) => {
       const results = data.toString().split('\n');
-      inferenceResult = results[results.length - 2];
-      logger.debug(`classify results: ${inferenceResult}`);
+      probability = results[results.length - 3];
+      tokens = results[results.length - 2];
+      logger.debug(`classify results: ${probability}, ${tokens}`);
     });
 
     inference.stderr.on('data', async (data) => {
@@ -94,7 +96,10 @@ export async function classify(req: Request, res: Response, next: NextFunction) 
 
     inference.on('close', (code) => {
       logger.debug('End Classify...');
-      res.json(inferenceResult);
+      res.json({
+        probability: probability,
+        tokens: tokens,
+      });
       next();
     });
   } catch (error) {

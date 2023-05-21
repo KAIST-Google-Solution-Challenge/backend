@@ -79,11 +79,11 @@ export async function classify(req: Request, res: Response, next: NextFunction) 
     const inference = spawn('python3.9', ['model/main.py', res.locals.transcription]);
 
     let probability: string;
-    let tokens: string;
+    let tokens: string[];
     inference.stdout.on('data', (data) => {
       const results = data.toString().split('\n');
       probability = results[results.length - 3];
-      tokens = results[results.length - 2];
+      tokens = JSON.parse(results[results.length - 2].replace(/'/g, '"'))
       logger.debug(`classify results: ${probability}, ${tokens}`);
     });
 

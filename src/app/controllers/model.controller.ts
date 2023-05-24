@@ -151,7 +151,10 @@ export async function errorHandler(error: Error, req: Request, res: Response, ne
 
 export async function analyzeMessages(req: Request, res: Response, next: NextFunction) {
   try {
-    const messages: Message[] = req.body.messages;
+    let messages: Message[] = req.body.messages;
+    if (messages.length > 10) {
+      messages = messages.slice(0, 11);
+    }
     const results: MessageResponse[] = [];
 
     if (messages.length == 0) {
